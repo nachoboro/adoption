@@ -21,34 +21,61 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface AdoptionInterface extends ethers.utils.Interface {
   functions: {
-    "deleteMe()": FunctionFragment;
+    "adoptAPet(string)": FunctionFragment;
+    "awardedOwner(address)": FunctionFragment;
+    "claimAward()": FunctionFragment;
+    "donate()": FunctionFragment;
     "getPetOwner(string)": FunctionFragment;
+    "getPetOwners()": FunctionFragment;
+    "petToAdopter(string)": FunctionFragment;
     "sendPetToBeAdopted(string)": FunctionFragment;
-    "setDeleteMe(uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "deleteMe", values?: undefined): string;
+  encodeFunctionData(functionFragment: "adoptAPet", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "awardedOwner",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimAward",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "donate", values?: undefined): string;
   encodeFunctionData(functionFragment: "getPetOwner", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "getPetOwners",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "petToAdopter",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "sendPetToBeAdopted",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setDeleteMe",
-    values: [BigNumberish]
-  ): string;
 
-  decodeFunctionResult(functionFragment: "deleteMe", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "adoptAPet", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "awardedOwner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "claimAward", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "donate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getPetOwner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "sendPetToBeAdopted",
+    functionFragment: "getPetOwners",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setDeleteMe",
+    functionFragment: "petToAdopter",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sendPetToBeAdopted",
     data: BytesLike
   ): Result;
 
@@ -99,50 +126,79 @@ export class Adoption extends BaseContract {
   interface: AdoptionInterface;
 
   functions: {
-    deleteMe(overrides?: CallOverrides): Promise<[BigNumber]>;
+    adoptAPet(
+      petName: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    awardedOwner(arg0: string, overrides?: CallOverrides): Promise<[number]>;
+
+    claimAward(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    donate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getPetOwner(
       petName: string,
       overrides?: CallOverrides
     ): Promise<[string] & { owner: string }>;
 
+    getPetOwners(overrides?: CallOverrides): Promise<[string[], string[]]>;
+
+    petToAdopter(arg0: string, overrides?: CallOverrides): Promise<[string]>;
+
     sendPetToBeAdopted(
       petName: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    setDeleteMe(
-      newDeleteMe: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
   };
 
-  deleteMe(overrides?: CallOverrides): Promise<BigNumber>;
+  adoptAPet(
+    petName: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  awardedOwner(arg0: string, overrides?: CallOverrides): Promise<number>;
+
+  claimAward(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  donate(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getPetOwner(petName: string, overrides?: CallOverrides): Promise<string>;
+
+  getPetOwners(overrides?: CallOverrides): Promise<[string[], string[]]>;
+
+  petToAdopter(arg0: string, overrides?: CallOverrides): Promise<string>;
 
   sendPetToBeAdopted(
     petName: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setDeleteMe(
-    newDeleteMe: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
-    deleteMe(overrides?: CallOverrides): Promise<BigNumber>;
+    adoptAPet(petName: string, overrides?: CallOverrides): Promise<void>;
+
+    awardedOwner(arg0: string, overrides?: CallOverrides): Promise<number>;
+
+    claimAward(overrides?: CallOverrides): Promise<void>;
+
+    donate(overrides?: CallOverrides): Promise<void>;
 
     getPetOwner(petName: string, overrides?: CallOverrides): Promise<string>;
 
+    getPetOwners(overrides?: CallOverrides): Promise<[string[], string[]]>;
+
+    petToAdopter(arg0: string, overrides?: CallOverrides): Promise<string>;
+
     sendPetToBeAdopted(
       petName: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setDeleteMe(
-      newDeleteMe: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -150,36 +206,66 @@ export class Adoption extends BaseContract {
   filters: {};
 
   estimateGas: {
-    deleteMe(overrides?: CallOverrides): Promise<BigNumber>;
+    adoptAPet(
+      petName: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    awardedOwner(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    claimAward(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    donate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     getPetOwner(petName: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getPetOwners(overrides?: CallOverrides): Promise<BigNumber>;
+
+    petToAdopter(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     sendPetToBeAdopted(
       petName: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    setDeleteMe(
-      newDeleteMe: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    deleteMe(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    adoptAPet(
+      petName: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    awardedOwner(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    claimAward(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    donate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     getPetOwner(
       petName: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    sendPetToBeAdopted(
-      petName: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    getPetOwners(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    petToAdopter(
+      arg0: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    setDeleteMe(
-      newDeleteMe: BigNumberish,
+    sendPetToBeAdopted(
+      petName: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
