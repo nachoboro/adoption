@@ -7,6 +7,7 @@ import { addListener } from "process";
 chai.use(solidity);
 const { expect } = chai;
 
+
 describe("Adoption", () => {
   let adoptionAddress: string;
   let adoptionContract: any;
@@ -17,14 +18,11 @@ describe("Adoption", () => {
     adoptionContract = await adoptionFactory.deploy();
     adoptionAddress = adoptionContract.address;
   });
-  describe("Delete me", async () => {
-    it("Delete me should start as 1", async () => {
-      const deleteMe = await adoptionContract.deleteMe();
-      expect(deleteMe).to.eq(1);
-    });
-    it("After set delete me, the variable should be +5 the setted value", async () => {
-      await adoptionContract.setDeleteMe(3);
-      expect(await adoptionContract.deleteMe()).to.eq(8);
+  describe("sendPetToBeAdopted", async () => {
+    it("First pet creation", async () => {
+      await adoptionContract.sendPetToBeAdopted("FirstPet");
+      expect(await adoptionContract.pets(0)).to.eq("FirstPet");
+      expect(await adoptionContract.petToAdopter("FirstPet")).to.eq("0x959FD7Ef9089B7142B6B908Dc3A8af7Aa8ff0FA1");
     });
   });
 });
