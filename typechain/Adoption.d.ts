@@ -27,7 +27,6 @@ interface AdoptionInterface extends ethers.utils.Interface {
     "donate()": FunctionFragment;
     "getPetOwner(string)": FunctionFragment;
     "getPetOwners()": FunctionFragment;
-    "hi()": FunctionFragment;
     "numberOfRemainingAwardsByAdopter(address)": FunctionFragment;
     "petToAdopter(string)": FunctionFragment;
     "pets(uint256)": FunctionFragment;
@@ -45,7 +44,6 @@ interface AdoptionInterface extends ethers.utils.Interface {
     functionFragment: "getPetOwners",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "hi", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "numberOfRemainingAwardsByAdopter",
     values: [string]
@@ -71,7 +69,6 @@ interface AdoptionInterface extends ethers.utils.Interface {
     functionFragment: "getPetOwners",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "hi", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "numberOfRemainingAwardsByAdopter",
     data: BytesLike
@@ -155,8 +152,6 @@ export class Adoption extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[], string[]] & { _owners: string[] }>;
 
-    hi(overrides?: CallOverrides): Promise<[string]>;
-
     numberOfRemainingAwardsByAdopter(
       arg0: string,
       overrides?: CallOverrides
@@ -191,8 +186,6 @@ export class Adoption extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[string[], string[]] & { _owners: string[] }>;
 
-  hi(overrides?: CallOverrides): Promise<string>;
-
   numberOfRemainingAwardsByAdopter(
     arg0: string,
     overrides?: CallOverrides
@@ -219,8 +212,6 @@ export class Adoption extends BaseContract {
     getPetOwners(
       overrides?: CallOverrides
     ): Promise<[string[], string[]] & { _owners: string[] }>;
-
-    hi(overrides?: CallOverrides): Promise<string>;
 
     numberOfRemainingAwardsByAdopter(
       arg0: string,
@@ -257,8 +248,6 @@ export class Adoption extends BaseContract {
 
     getPetOwners(overrides?: CallOverrides): Promise<BigNumber>;
 
-    hi(overrides?: CallOverrides): Promise<BigNumber>;
-
     numberOfRemainingAwardsByAdopter(
       arg0: string,
       overrides?: CallOverrides
@@ -294,8 +283,6 @@ export class Adoption extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getPetOwners(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    hi(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     numberOfRemainingAwardsByAdopter(
       arg0: string,

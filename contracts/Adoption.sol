@@ -52,7 +52,7 @@ contract Adoption {
         // 0.01 ETH (0.01x10^18)
         require(
             address(this).balance > 10000000000000000,
-            "Contract insufficient funds"
+            "Contract insufficient funds."
         );
         // order is important here, in order to avoid security issues
         numberOfRemainingAwardsByAdopter[msg.sender] -= 1;
