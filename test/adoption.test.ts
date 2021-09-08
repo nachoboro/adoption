@@ -13,17 +13,16 @@ describe("Adoption", () => {
   let adoptionAddress: string;
   let adoptionContract: any;
   let contractDeployer: SignerWithAddress;
-  let testSender: SignerWithAddress;
+  let testSender1: SignerWithAddress;
 
   beforeEach(async () => {
-    const [deployer, sender] = await ethers.getSigners();
+    const [deployer, sender1, sender2] = await ethers.getSigners();
     const adoptionFactory = new Adoption__factory(deployer);
     adoptionContract = await adoptionFactory.deploy();
     adoptionAddress = adoptionContract.address;
     // default sender
     contractDeployer = deployer;
-    // another sender
-    testSender = sender;
+    testSender1 = sender1;
   });
 
   describe("sendPetToBeAdopted test", async () => {
@@ -34,13 +33,9 @@ describe("Adoption", () => {
     });
     it("Pet already created", async () => {
       await adoptionContract.sendPetToBeAdopted("FirstPet");
-      // check an easy way to do this
-      try {
-        await adoptionContract.sendPetToBeAdopted("FirstPet");
-      }
-      catch (e) {
-        expect(e.message).to.eq("VM Exception while processing transaction: revert Pet already created.")
-      }
+      expect(adoptionContract.sendPetToBeAdopted("FirstPet")).to.be.revertedWith(
+        "Pet already created."
+      );
     });
   });
 
@@ -55,18 +50,14 @@ describe("Adoption", () => {
     it("Pet adoption", async () => {
       await adoptionContract.sendPetToBeAdopted("FirstPet");
       // change sender
-      await adoptionContract.connect(testSender).adoptAPet("FirstPet");
-      expect(await adoptionContract.petToAdopter("FirstPet")).to.eq(testSender.address);
+      await adoptionContract.connect(testSender1).adoptAPet("FirstPet");
+      expect(await adoptionContract.petToAdopter("FirstPet")).to.eq(testSender1.address);
     });
     it("Failed pet adoption by current owner", async () => {
       await adoptionContract.sendPetToBeAdopted("FirstPet");
-      // check an easy way to do this
-      try {
-        await adoptionContract.adoptAPet("FirstPet");
-      }
-      catch (e) {
-        expect(e.message).to.eq("VM Exception while processing transaction: revert Pet cannot be adopted by the current owner.")
-      }
+      expect(adoptionContract.adoptAPet("FirstPet")).to.be.revertedWith(
+        "Pet cannot be adopted by the current owner."
+      );
     });
   });
 
@@ -74,10 +65,10 @@ describe("Adoption", () => {
     it("Get pets and owners", async () => {
       await adoptionContract.sendPetToBeAdopted("FirstPet");
       // change sender
-      await adoptionContract.connect(testSender).sendPetToBeAdopted("SecondPet");
+      await adoptionContract.connect(testSender1).sendPetToBeAdopted("SecondPet");
       const [pets, owners] = await adoptionContract.getPetOwners();
       expect(pets).to.eql(["FirstPet", "SecondPet"]);
-      expect(owners).to.eql([contractDeployer.address, testSender.address]);
+      expect(owners).to.eql([contractDeployer.address, testSender1.address]);
     });
   });
 
@@ -96,36 +87,42 @@ describe("Adoption", () => {
     beforeEach(async () => {
       await adoptionContract.sendPetToBeAdopted("FirstPet");
       // change sender
-      await adoptionContract.connect(testSender).adoptAPet("FirstPet");
+      await adoptionContract.connect(testSender1).adoptAPet("FirstPet");
     });
     it("Claim award by pet", async () => {
       await adoptionContract.donate({
         value: ethers.utils.parseEther('0.1')
       });
-      await adoptionContract.connect(testSender).claimAward();
+
+      // check sender balance
+      const testSender1Balance = await ethers.provider.getBalance(testSender1.address);
+      const tx = await adoptionContract.connect(testSender1).claimAward();
+      const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
+      const gasPrice = await ethers.provider.getGasPrice();
+
+      const expectedBalance = testSender1Balance.toBigInt() - receipt.gasUsed.toBigInt() * gasPrice.toBigInt() + ethers.utils.parseEther("0.01").toBigInt();
+
+      expect(await ethers.provider.getBalance(testSender1.address)).to.be.eq(expectedBalance);
+
+      // check contract balance
       const remain = await ethers.provider.getBalance(adoptionAddress);
       expect(remain).to.eq(ethers.utils.parseEther('0.09'));
+
+      // check number of tx
+      expect(await ethers.provider.getTransactionCount(adoptionContract.address)).to.be.eq(1);
     });
     it("Claim from owner but not adopter", async () => {
       await adoptionContract.donate({
         value: ethers.utils.parseEther('0.1')
       });
-      // check an easy way to do this
-      try {
-        await adoptionContract.claimAward();
-      }
-      catch (e) {
-        expect(e.message).to.eq("VM Exception while processing transaction: revert Only an adopter can claim his award and can only claim it once per adopted pet.")
-      }
+      expect(adoptionContract.claimAward()).to.be.revertedWith(
+        "Only an adopter can claim his award and can only claim it once per adopted pet."
+      );
     });
     it("Contract without funds", async () => {
-      // check an easy way to do this
-      try {
-        await adoptionContract.connect(testSender).claimAward();
-      }
-      catch (e) {
-        expect(e.code).to.eq("INSUFFICIENT_FUNDS")
-      }
+      expect(adoptionContract.connect(testSender1).claimAward()).to.be.revertedWith(
+        "Contract insufficient funds."
+      );
     });
   });
 
