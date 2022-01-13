@@ -23,38 +23,23 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface AdoptionInterface extends ethers.utils.Interface {
   functions: {
     "adoptAPet(string)": FunctionFragment;
-    "availableMoney()": FunctionFragment;
     "claimAward()": FunctionFragment;
     "donate()": FunctionFragment;
-    "getAvailableMoney()": FunctionFragment;
     "getPetOwner(string)": FunctionFragment;
     "getPetOwners()": FunctionFragment;
-    "getUserClaims()": FunctionFragment;
     "pets(uint256)": FunctionFragment;
     "sendPetToBeAdopted(string)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "adoptAPet", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "availableMoney",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "claimAward",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "donate", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "getAvailableMoney",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "getPetOwner", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getPetOwners",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getUserClaims",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "pets", values: [BigNumberish]): string;
@@ -64,26 +49,14 @@ interface AdoptionInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "adoptAPet", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "availableMoney",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "claimAward", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "donate", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getAvailableMoney",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "getPetOwner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "getPetOwners",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getUserClaims",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "pets", data: BytesLike): Result;
@@ -144,8 +117,6 @@ export class Adoption extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    availableMoney(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     claimAward(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -154,8 +125,6 @@ export class Adoption extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    getAvailableMoney(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     getPetOwner(
       petName: string,
       overrides?: CallOverrides
@@ -163,9 +132,7 @@ export class Adoption extends BaseContract {
 
     getPetOwners(
       overrides?: CallOverrides
-    ): Promise<[string[], string[]] & { _owners: string[] }>;
-
-    getUserClaims(overrides?: CallOverrides): Promise<[BigNumber]>;
+    ): Promise<[string[], string[]] & { owners: string[] }>;
 
     pets(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
@@ -180,8 +147,6 @@ export class Adoption extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  availableMoney(overrides?: CallOverrides): Promise<BigNumber>;
-
   claimAward(
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -190,15 +155,11 @@ export class Adoption extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  getAvailableMoney(overrides?: CallOverrides): Promise<BigNumber>;
-
   getPetOwner(petName: string, overrides?: CallOverrides): Promise<string>;
 
   getPetOwners(
     overrides?: CallOverrides
-  ): Promise<[string[], string[]] & { _owners: string[] }>;
-
-  getUserClaims(overrides?: CallOverrides): Promise<BigNumber>;
+  ): Promise<[string[], string[]] & { owners: string[] }>;
 
   pets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
@@ -210,21 +171,15 @@ export class Adoption extends BaseContract {
   callStatic: {
     adoptAPet(petName: string, overrides?: CallOverrides): Promise<void>;
 
-    availableMoney(overrides?: CallOverrides): Promise<BigNumber>;
-
     claimAward(overrides?: CallOverrides): Promise<void>;
 
     donate(overrides?: CallOverrides): Promise<void>;
-
-    getAvailableMoney(overrides?: CallOverrides): Promise<BigNumber>;
 
     getPetOwner(petName: string, overrides?: CallOverrides): Promise<string>;
 
     getPetOwners(
       overrides?: CallOverrides
-    ): Promise<[string[], string[]] & { _owners: string[] }>;
-
-    getUserClaims(overrides?: CallOverrides): Promise<BigNumber>;
+    ): Promise<[string[], string[]] & { owners: string[] }>;
 
     pets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
@@ -242,8 +197,6 @@ export class Adoption extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    availableMoney(overrides?: CallOverrides): Promise<BigNumber>;
-
     claimAward(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -252,13 +205,9 @@ export class Adoption extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    getAvailableMoney(overrides?: CallOverrides): Promise<BigNumber>;
-
     getPetOwner(petName: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     getPetOwners(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getUserClaims(overrides?: CallOverrides): Promise<BigNumber>;
 
     pets(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -274,8 +223,6 @@ export class Adoption extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    availableMoney(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     claimAward(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -284,16 +231,12 @@ export class Adoption extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    getAvailableMoney(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getPetOwner(
       petName: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getPetOwners(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getUserClaims(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pets(
       arg0: BigNumberish,

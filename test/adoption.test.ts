@@ -56,16 +56,10 @@ describe("Adoption", () => {
       expect(map[1][0]).to.be.eq(await address1.getAddress());
     });
   });
-  describe("Donate", async () => {
-    it("When donating then available money should increase", async () => {
-      await adoptionContract.donate({value: ethers.utils.parseEther('0.5')});
-      expect(await adoptionContract.getAvailableMoney()).to.be.eq(ethers.utils.parseEther('0.5'));
-    });
-  });
   describe("Claim awards",async () => {
     it("When claiming with a non owner then error message should be sent", async () => {
       await adoptionContract.connect(address1).adoptAPet("Chami");
-      await expect(adoptionContract.connect(address2).claimAward()).to.be.revertedWith("Only owners can claim awards");
+      await expect(adoptionContract.connect(address2).claimAward()).to.be.revertedWith("Only owners can claim awards when their balance is greater than 0");
     });
     it("When claiming with an owner with balance left then all balances should be correctly adjusted", async () => {
       await adoptionContract.connect(address1).adoptAPet("Chami");
@@ -73,13 +67,13 @@ describe("Adoption", () => {
       await adoptionContract.connect(address1).adoptAPet("Goldfryd");
       await adoptionContract.donate({value: ethers.utils.parseEther('0.35')});
       await adoptionContract.connect(address1).claimAward();
-      expect(await adoptionContract.getAvailableMoney()).to.be.eq(ethers.utils.parseEther('0.05'));
+      expect(await ethers.provider.getBalance(adoptionAddress)).to.be.eq(ethers.utils.parseEther('0.05'));
     });
     it("When claiming with an owner with no balance then error message should be sent", async () => {
       await adoptionContract.connect(address1).adoptAPet("Chami");
       await adoptionContract.donate({value: ethers.utils.parseEther('0.1')});
       await adoptionContract.connect(address1).claimAward();
-      await expect(adoptionContract.connect(address1).claimAward()).to.be.revertedWith("No Balance left to claim");
+      await expect(adoptionContract.connect(address1).claimAward()).to.be.revertedWith("Only owners can claim awards when their balance is greater than 0");
     });
     it("When claiming with insufficient amount of donations then error message should be sent", async () => {
       await adoptionContract.connect(address1).adoptAPet("Chami");
